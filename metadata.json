@@ -1,0 +1,6 @@
+{
+  "name": "Bangladesh Live Information Hub",
+  "description": "Real-time mobile-first centralized information dashboard for Bangladesh covering breaking updates, weather, alerts, commodity prices, opportunities, and local district data.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

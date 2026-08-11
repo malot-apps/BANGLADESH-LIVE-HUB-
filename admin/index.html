@@ -1,0 +1,297 @@
+<!-- File: admin/index.html -->
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | Bangladesh Live Hub Control Center</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            admin: {
+              dark: '#0b1329',
+              card: '#111c38',
+              border: '#1e2d54',
+              accent: '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & Lucide Icons CDN -->
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Alpine.js CDN -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <style>
+    body { font-family: 'Inter', 'Hind Siliguri', sans-serif; }
+  </style>
+</head>
+<body class="bg-[#0b1329] text-slate-100 min-h-screen flex" x-data="dashboardApp()">
+
+  <!-- 1. Sidebar Navigation -->
+  <aside class="w-64 bg-[#0f1a36] border-r border-[#1e2d54] flex flex-col justify-between shrink-0 hidden md:flex min-h-screen sticky top-0">
+    <div>
+      <!-- Brand Logo -->
+      <div class="p-5 border-b border-[#1e2d54] flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-emerald-500 p-0.5">
+          <div class="w-full h-full bg-[#0b1329] rounded-[10px] flex items-center justify-center font-black text-red-500 text-lg">
+            ব
+          </div>
+        </div>
+        <div>
+          <h1 class="font-bold text-sm text-white leading-none">বাংলাদেশ লাইভ হাব</h1>
+          <span class="text-[10px] text-emerald-400 font-semibold tracking-wider">ADMIN CONTROL CENTER</span>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="p-3 space-y-1">
+        <a href="index.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-red-600 text-white shadow-lg shadow-red-600/20">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard Overview</span>
+        </a>
+        <a href="channels.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-[#162447] transition-all">
+          <i data-lucide="tv" class="w-4 h-4"></i>
+          <span>Live TV Management</span>
+        </a>
+        <a href="sources.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-[#162447] transition-all">
+          <i data-lucide="database" class="w-4 h-4"></i>
+          <span>Data Sources & Automation</span>
+        </a>
+        <a href="alerts.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-[#162447] transition-all">
+          <i data-lucide="alert-circle" class="w-4 h-4"></i>
+          <span>Emergency Public Alerts</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- User & Exit Portal Link -->
+    <div class="p-4 border-t border-[#1e2d54] space-y-2">
+      <div class="flex items-center gap-3 px-2">
+        <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-emerald-400">
+          TM
+        </div>
+        <div class="truncate">
+          <p class="text-xs font-bold text-white truncate">tonmoymalot@gmail.com</p>
+          <p class="text-[10px] text-emerald-400 font-medium">SUPER_ADMIN</p>
+        </div>
+      </div>
+      <a href="../client/index.html" class="flex items-center justify-center gap-2 w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition-all border border-slate-700">
+        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        <span>View Public Website</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- 2. Main Dashboard Area -->
+  <div class="flex-1 min-w-0 flex flex-col">
+    <!-- Top Header Bar -->
+    <header class="bg-[#0f1a36] border-b border-[#1e2d54] px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-30">
+      <div class="flex items-center gap-3">
+        <button class="md:hidden text-slate-400 hover:text-white">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+        <div>
+          <h2 class="text-base font-bold text-white">System Executive Dashboard</h2>
+          <p class="text-xs text-slate-400">Real-time health telemetry & infrastructure metrics</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-xs font-semibold flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>SYSTEM ONLINE (99.9%)</span>
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="p-6 space-y-6">
+
+      <!-- Executive Metric Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-[#111c38] border border-[#1e2d54] rounded-2xl p-5 space-y-2">
+          <div class="flex items-center justify-between text-slate-400">
+            <span class="text-xs font-medium uppercase tracking-wider">Total Active Users</span>
+            <i data-lucide="users" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-2xl font-bold text-white" x-text="stats.activeUsers.toLocaleString()"></span>
+            <span class="text-xs font-semibold text-emerald-400">+12% today</span>
+          </div>
+        </div>
+
+        <div class="bg-[#111c38] border border-[#1e2d54] rounded-2xl p-5 space-y-2">
+          <div class="flex items-center justify-between text-slate-400">
+            <span class="text-xs font-medium uppercase tracking-wider">Live TV Streams</span>
+            <i data-lucide="tv" class="w-4 h-4 text-red-500"></i>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-2xl font-bold text-white" x-text="stats.activeStreams + ' / ' + stats.totalChannels"></span>
+            <span class="text-xs font-semibold text-emerald-400">100% Proxied</span>
+          </div>
+        </div>
+
+        <div class="bg-[#111c38] border border-[#1e2d54] rounded-2xl p-5 space-y-2">
+          <div class="flex items-center justify-between text-slate-400">
+            <span class="text-xs font-medium uppercase tracking-wider">Healthy Data Sources</span>
+            <i data-lucide="database" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-2xl font-bold text-white" x-text="stats.healthySources + ' / ' + (stats.healthySources + stats.failedSources)"></span>
+            <span class="text-xs font-semibold text-red-400" x-text="stats.failedSources + ' Error'"></span>
+          </div>
+        </div>
+
+        <div class="bg-[#111c38] border border-[#1e2d54] rounded-2xl p-5 space-y-2">
+          <div class="flex items-center justify-between text-slate-400">
+            <span class="text-xs font-medium uppercase tracking-wider">Edge Proxy Node</span>
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-2xl font-bold text-white">Cloudflare Edge</span>
+            <span class="text-xs font-semibold text-emerald-400">0ms Overhead</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Control Sections -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Live TV Stream Health Widget -->
+        <div class="bg-[#111c38] border border-[#1e2d54] rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-[#1e2d54] pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="activity" class="w-4 h-4 text-red-500"></i>
+                <span>Live TV Stream Status</span>
+              </h3>
+              <p class="text-xs text-slate-400">HLS Proxy Ping and response times</p>
+            </div>
+            <a href="channels.html" class="text-xs font-bold text-red-400 hover:underline">Manage Channels</a>
+          </div>
+
+          <div class="space-y-2">
+            <template x-for="ch in channels" :key="ch.id">
+              <div class="p-3 bg-[#0b1329] border border-[#1e2d54] rounded-xl flex items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-2.5">
+                  <span 
+                    :class="ch.health === 'ONLINE' ? 'bg-emerald-500' : 'bg-amber-500'"
+                    class="w-2.5 h-2.5 rounded-full"
+                  ></span>
+                  <span class="font-bold text-slate-100" x-text="ch.nameBn + ' (' + ch.nameEn + ')'"></span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-400">
+                  <span class="font-mono text-[11px]" x-text="ch.responseTimeMs + ' ms'"></span>
+                  <span 
+                    :class="ch.health === 'ONLINE' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'"
+                    class="px-2 py-0.5 border rounded-md text-[10px] font-bold" 
+                    x-text="ch.health"
+                  ></span>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Data Sources & Automation Cron Health -->
+        <div class="bg-[#111c38] border border-[#1e2d54] rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-[#1e2d54] pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="cpu" class="w-4 h-4 text-emerald-400"></i>
+                <span>Automation Collectors Status</span>
+              </h3>
+              <p class="text-xs text-slate-400">RSS, Weather, and Gov Open Data ingestion</p>
+            </div>
+            <a href="sources.html" class="text-xs font-bold text-emerald-400 hover:underline">Manage Sources</a>
+          </div>
+
+          <div class="space-y-2">
+            <template x-for="src in sources" :key="src.id">
+              <div class="p-3 bg-[#0b1329] border border-[#1e2d54] rounded-xl flex items-center justify-between gap-3 text-xs">
+                <div>
+                  <h4 class="font-bold text-slate-100" x-text="src.name"></h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5" x-text="'Last run: ' + src.lastRun"></p>
+                </div>
+                <div>
+                  <span 
+                    :class="src.status === 'HEALTHY' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'"
+                    class="px-2 py-0.5 border rounded-md text-[10px] font-bold" 
+                    x-text="src.status"
+                  ></span>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Audit Logs Table -->
+      <div class="bg-[#111c38] border border-[#1e2d54] rounded-2xl p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-[#1e2d54] pb-3">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="shield" class="w-4 h-4 text-indigo-400"></i>
+              <span>System Audit Logs (Append-Only Ledger)</span>
+            </h3>
+            <p class="text-xs text-slate-400">Recent administrative modifications and security events</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead>
+              <tr class="border-b border-[#1e2d54] text-slate-400 uppercase text-[10px] tracking-wider font-semibold">
+                <th class="p-2.5">Admin Email</th>
+                <th class="p-2.5">Action</th>
+                <th class="p-2.5">Target Resource</th>
+                <th class="p-2.5">IP Address</th>
+                <th class="p-2.5 text-right">Timestamp</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#1e2d54]/60">
+              <template x-for="log in auditLogs" :key="log.id">
+                <tr class="hover:bg-[#162447] transition-colors">
+                  <td class="p-2.5 font-bold text-white" x-text="log.admin"></td>
+                  <td class="p-2.5">
+                    <span class="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded text-[10px] font-mono font-bold" x-text="log.action"></span>
+                  </td>
+                  <td class="p-2.5 font-mono text-[11px] text-slate-300" x-text="log.resource"></td>
+                  <td class="p-2.5 text-slate-400 font-mono" x-text="log.ip"></td>
+                  <td class="p-2.5 text-right text-slate-400" x-text="log.time"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="admin.js"></script>
+  <script>
+    function dashboardApp() {
+      return {
+        stats: window.AdminStore.stats,
+        channels: window.AdminStore.channels,
+        sources: window.AdminStore.sources,
+        auditLogs: window.AdminStore.auditLogs
+      }
+    }
+  </script>
+</body>
+</html>

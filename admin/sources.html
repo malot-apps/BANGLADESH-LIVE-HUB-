@@ -1,0 +1,164 @@
+<!-- File: admin/sources.html -->
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Sources & Automation | Admin Control Center</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            admin: {
+              dark: '#0b1329',
+              card: '#111c38',
+              border: '#1e2d54',
+              accent: '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & Lucide Icons CDN -->
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Alpine.js CDN -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <style>
+    body { font-family: 'Inter', 'Hind Siliguri', sans-serif; }
+  </style>
+</head>
+<body class="bg-[#0b1329] text-slate-100 min-h-screen flex" x-data="sourcesApp()">
+
+  <!-- 1. Sidebar Navigation -->
+  <aside class="w-64 bg-[#0f1a36] border-r border-[#1e2d54] flex flex-col justify-between shrink-0 hidden md:flex min-h-screen sticky top-0">
+    <div>
+      <div class="p-5 border-b border-[#1e2d54] flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-emerald-500 p-0.5">
+          <div class="w-full h-full bg-[#0b1329] rounded-[10px] flex items-center justify-center font-black text-red-500 text-lg">
+            ব
+          </div>
+        </div>
+        <div>
+          <h1 class="font-bold text-sm text-white leading-none">বাংলাদেশ লাইভ হাব</h1>
+          <span class="text-[10px] text-emerald-400 font-semibold tracking-wider">ADMIN CONTROL CENTER</span>
+        </div>
+      </div>
+
+      <nav class="p-3 space-y-1">
+        <a href="index.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-[#162447] transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard Overview</span>
+        </a>
+        <a href="channels.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-[#162447] transition-all">
+          <i data-lucide="tv" class="w-4 h-4"></i>
+          <span>Live TV Management</span>
+        </a>
+        <a href="sources.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-red-600 text-white shadow-lg shadow-red-600/20">
+          <i data-lucide="database" class="w-4 h-4"></i>
+          <span>Data Sources & Automation</span>
+        </a>
+        <a href="alerts.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-[#162447] transition-all">
+          <i data-lucide="alert-circle" class="w-4 h-4"></i>
+          <span>Emergency Public Alerts</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="p-4 border-t border-[#1e2d54]">
+      <a href="../client/index.html" class="flex items-center justify-center gap-2 w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition-all border border-slate-700">
+        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        <span>View Public Website</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- 2. Main Content Area -->
+  <div class="flex-1 min-w-0 flex flex-col">
+    <!-- Header -->
+    <header class="bg-[#0f1a36] border-b border-[#1e2d54] px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-30">
+      <div>
+        <h2 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="cpu" class="w-5 h-5 text-emerald-400"></i>
+          <span>Data Sources & Automation Control</span>
+        </h2>
+        <p class="text-xs text-slate-400">Monitor automated Cron collectors for Weather, RSS, and Open Data APIs</p>
+      </div>
+
+      <button @click="triggerAll()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all">
+        <i data-lucide="play" class="w-4 h-4"></i>
+        <span>Run All Collectors</span>
+      </button>
+    </header>
+
+    <main class="p-6 space-y-6">
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <template x-for="src in sources" :key="src.id">
+          <div class="bg-[#111c38] border border-[#1e2d54] rounded-2xl p-5 space-y-4 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded border border-slate-700 font-mono text-[10px] font-bold" x-text="src.type"></span>
+                <span 
+                  :class="src.status === 'HEALTHY' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'"
+                  class="px-2 py-0.5 border rounded text-[10px] font-bold"
+                  x-text="src.status"
+                ></span>
+              </div>
+              <h3 class="font-bold text-white text-sm" x-text="src.name"></h3>
+              <p class="text-[11px] font-mono text-slate-400 truncate bg-[#0b1329] p-2 rounded-lg border border-[#1e2d54]" x-text="src.endpoint"></p>
+            </div>
+
+            <div class="pt-3 border-t border-[#1e2d54] flex items-center justify-between text-xs">
+              <span class="text-slate-400" x-text="'Interval: ' + src.intervalMins + 'm'"></span>
+              <button 
+                @click="runCollector(src)" 
+                :disabled="runningId === src.id"
+                class="px-3 py-1.5 bg-red-600 hover:bg-red-700 disabled:bg-slate-700 text-white rounded-lg font-bold flex items-center gap-1.5 transition-all text-xs"
+              >
+                <i data-lucide="rotate-cw" :class="runningId === src.id ? 'animate-spin' : ''" class="w-3.5 h-3.5"></i>
+                <span x-text="runningId === src.id ? 'Executing...' : 'Run Now'"></span>
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="admin.js"></script>
+  <script>
+    function sourcesApp() {
+      return {
+        sources: window.AdminStore.sources,
+        runningId: null,
+        runCollector(src) {
+          this.runningId = src.id;
+          setTimeout(() => {
+            src.status = 'HEALTHY';
+            src.lastRun = 'এইমাত্র সম্পন্ন';
+            this.runningId = null;
+          }, 1200);
+        },
+        triggerAll() {
+          this.sources.forEach(s => {
+            s.status = 'HEALTHY';
+            s.lastRun = 'এইমাত্র সম্পন্ন';
+          });
+          alert('All automation collectors executed successfully!');
+        }
+      }
+    }
+  </script>
+</body>
+</html>

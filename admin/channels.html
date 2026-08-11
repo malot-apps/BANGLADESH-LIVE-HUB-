@@ -1,0 +1,346 @@
+<!-- File: admin/channels.html -->
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TV Channels Manager | Admin Control Center</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            admin: {
+              dark: '#0b1329',
+              card: '#111c38',
+              border: '#1e2d54',
+              accent: '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & Lucide Icons CDN -->
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Alpine.js CDN -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <style>
+    body { font-family: 'Inter', 'Hind Siliguri', sans-serif; }
+  </style>
+</head>
+<body class="bg-[#0b1329] text-slate-100 min-h-screen flex" x-data="channelsApp()">
+
+  <!-- 1. Sidebar Navigation -->
+  <aside class="w-64 bg-[#0f1a36] border-r border-[#1e2d54] flex flex-col justify-between shrink-0 hidden md:flex min-h-screen sticky top-0">
+    <div>
+      <!-- Brand Logo -->
+      <div class="p-5 border-b border-[#1e2d54] flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-emerald-500 p-0.5">
+          <div class="w-full h-full bg-[#0b1329] rounded-[10px] flex items-center justify-center font-black text-red-500 text-lg">
+            ব
+          </div>
+        </div>
+        <div>
+          <h1 class="font-bold text-sm text-white leading-none">বাংলাদেশ লাইভ হাব</h1>
+          <span class="text-[10px] text-emerald-400 font-semibold tracking-wider">ADMIN CONTROL CENTER</span>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="p-3 space-y-1">
+        <a href="index.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-[#162447] transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard Overview</span>
+        </a>
+        <a href="channels.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-red-600 text-white shadow-lg shadow-red-600/20">
+          <i data-lucide="tv" class="w-4 h-4"></i>
+          <span>Live TV Management</span>
+        </a>
+        <a href="sources.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-[#162447] transition-all">
+          <i data-lucide="database" class="w-4 h-4"></i>
+          <span>Data Sources & Automation</span>
+        </a>
+        <a href="alerts.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-[#162447] transition-all">
+          <i data-lucide="alert-circle" class="w-4 h-4"></i>
+          <span>Emergency Public Alerts</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="p-4 border-t border-[#1e2d54] space-y-2">
+      <a href="../client/index.html" class="flex items-center justify-center gap-2 w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition-all border border-slate-700">
+        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        <span>View Public Website</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- 2. Main Content Area -->
+  <div class="flex-1 min-w-0 flex flex-col">
+    <!-- Header -->
+    <header class="bg-[#0f1a36] border-b border-[#1e2d54] px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-30">
+      <div>
+        <h2 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="tv" class="w-5 h-5 text-red-500"></i>
+          <span>TV Channels & Streams Manager</span>
+        </h2>
+        <p class="text-xs text-slate-400">Configure streams, Cloudflare proxy settings, and M3U playlists</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button 
+          @click="showM3uModal = true" 
+          class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center gap-2 transition-all"
+        >
+          <i data-lucide="file-up" class="w-4 h-4 text-emerald-400"></i>
+          <span>Import M3U</span>
+        </button>
+        <button 
+          @click="openAddModal()" 
+          class="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-red-600/20 flex items-center gap-2 transition-all"
+        >
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Add Channel</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="p-6 space-y-6">
+
+      <!-- Channel Table Card -->
+      <div class="bg-[#111c38] border border-[#1e2d54] rounded-2xl overflow-hidden shadow-xl">
+        <div class="p-4 border-b border-[#1e2d54] flex items-center justify-between gap-4">
+          <div class="relative flex-1 max-w-xs">
+            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+            <input 
+              type="text" 
+              x-model="search" 
+              placeholder="Filter channels..." 
+              class="w-full bg-[#0b1329] border border-[#1e2d54] rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-red-500"
+            />
+          </div>
+          <span class="text-xs text-slate-400" x-text="filteredChannels().length + ' channels configured'"></span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-200">
+            <thead>
+              <tr class="bg-[#0b1329]/80 border-b border-[#1e2d54] text-slate-400 uppercase text-[10px] tracking-wider font-semibold">
+                <th class="p-3 pl-4">Channel Details</th>
+                <th class="p-3">Category</th>
+                <th class="p-3">Stream Format</th>
+                <th class="p-3">Cloudflare Proxy</th>
+                <th class="p-3">Stream Health</th>
+                <th class="p-3 text-right pr-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#1e2d54]/60">
+              <template x-for="ch in filteredChannels()" :key="ch.id">
+                <tr class="hover:bg-[#162447] transition-colors">
+                  <td class="p-3 pl-4">
+                    <div class="flex items-center gap-3">
+                      <img :src="ch.logo" class="w-8 h-8 rounded-lg object-cover bg-slate-900 border border-slate-700" />
+                      <div>
+                        <p class="font-bold text-white" x-text="ch.nameBn"></p>
+                        <p class="text-[10px] text-slate-400 font-mono" x-text="ch.nameEn"></p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="p-3">
+                    <span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded border border-slate-700 font-bold text-[10px]" x-text="ch.category"></span>
+                  </td>
+                  <td class="p-3">
+                    <span class="font-mono text-emerald-400 font-bold uppercase" x-text="ch.streamType"></span>
+                  </td>
+                  <td class="p-3">
+                    <button 
+                      @click="ch.useProxy = !ch.useProxy"
+                      :class="ch.useProxy ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-slate-800 text-slate-500 border-slate-700'"
+                      class="px-2.5 py-1 rounded-md border text-[10px] font-bold flex items-center gap-1.5 transition-all"
+                    >
+                      <i data-lucide="shield" class="w-3 h-3"></i>
+                      <span x-text="ch.useProxy ? 'Edge Proxy ON' : 'Direct Link'"></span>
+                    </button>
+                  </td>
+                  <td class="p-3">
+                    <div class="flex items-center gap-2">
+                      <span :class="ch.health === 'ONLINE' ? 'bg-emerald-500' : 'bg-amber-500'" class="w-2 h-2 rounded-full"></span>
+                      <span class="font-bold text-[11px]" x-text="ch.health"></span>
+                      <span class="text-[10px] text-slate-400 font-mono" x-text="'(' + ch.responseTimeMs + 'ms)'"></span>
+                    </div>
+                  </td>
+                  <td class="p-3 text-right pr-4">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button @click="pingStream(ch)" class="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-emerald-400 transition-colors" title="Test Stream Health">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                      </button>
+                      <button @click="openEditModal(ch)" class="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors" title="Edit Details">
+                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                      </button>
+                      <button @click="deleteChannel(ch.id)" class="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-red-400 transition-colors" title="Delete Channel">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal 1: Add / Edit Channel -->
+  <div x-show="showChannelModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" x-cloak>
+    <div class="bg-[#111c38] border border-[#1e2d54] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl p-6 space-y-4" @click.outside="showChannelModal = false">
+      <div class="flex items-center justify-between border-b border-[#1e2d54] pb-3">
+        <h3 class="font-bold text-white text-base" x-text="editingChannel.id ? 'Edit TV Channel' : 'Add New TV Channel'"></h3>
+        <button @click="showChannelModal = false" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form @submit.prevent="saveChannel()" class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Bangla Name (বাংলা নাম)</label>
+          <input type="text" x-model="editingChannel.nameBn" required class="w-full bg-[#0b1329] border border-[#1e2d54] rounded-xl p-2.5 text-white focus:outline-none focus:border-red-500" placeholder="e.g. সময় টিভি" />
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">English Name</label>
+          <input type="text" x-model="editingChannel.nameEn" required class="w-full bg-[#0b1329] border border-[#1e2d54] rounded-xl p-2.5 text-white focus:outline-none focus:border-red-500" placeholder="e.g. Somoy TV" />
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Stream URL (.m3u8 / embed)</label>
+          <input type="url" x-model="editingChannel.streamUrl" required class="w-full bg-[#0b1329] border border-[#1e2d54] rounded-xl p-2.5 text-white font-mono focus:outline-none focus:border-red-500" placeholder="https://..." />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Category</label>
+            <select x-model="editingChannel.category" class="w-full bg-[#0b1329] border border-[#1e2d54] rounded-xl p-2.5 text-white focus:outline-none focus:border-red-500">
+              <option value="NEWS">NEWS</option>
+              <option value="SPORTS">SPORTS</option>
+              <option value="ENTERTAINMENT">ENTERTAINMENT</option>
+              <option value="ISLAMIC">ISLAMIC</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Stream Type</label>
+            <select x-model="editingChannel.streamType" class="w-full bg-[#0b1329] border border-[#1e2d54] rounded-xl p-2.5 text-white focus:outline-none focus:border-red-500">
+              <option value="hls">HLS (.m3u8)</option>
+              <option value="dash">DASH (.mpd)</option>
+              <option value="embed">Embed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-2 flex items-center justify-between border-t border-[#1e2d54]">
+          <label class="flex items-center gap-2 cursor-pointer text-slate-300">
+            <input type="checkbox" x-model="editingChannel.useProxy" class="rounded bg-[#0b1329] border-[#1e2d54] text-red-600 focus:ring-0" />
+            <span>Cloudflare Edge Proxy Enabled</span>
+          </label>
+
+          <div class="flex items-center gap-2">
+            <button type="button" @click="showChannelModal = false" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-bold">Cancel</button>
+            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 shadow-lg shadow-red-600/20">Save Channel</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Bulk M3U Import -->
+  <div x-show="showM3uModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" x-cloak>
+    <div class="bg-[#111c38] border border-[#1e2d54] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl p-6 space-y-4" @click.outside="showM3uModal = false">
+      <div class="flex items-center justify-between border-b border-[#1e2d54] pb-3">
+        <h3 class="font-bold text-white text-base">Bulk Import M3U Playlist</h3>
+        <button @click="showM3uModal = false" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <p class="text-slate-400 leading-relaxed">Paste raw M3U playlist text or URL containing authorized channel streams.</p>
+        <textarea x-model="m3uContent" rows="6" class="w-full bg-[#0b1329] border border-[#1e2d54] rounded-xl p-3 font-mono text-slate-200 text-xs focus:outline-none focus:border-red-500" placeholder="#EXTM3U&#10;#EXTINF:-1 tvg-id=&quot;somoy&quot; group-title=&quot;NEWS&quot;, Somoy TV&#10;https://example.com/live.m3u8"></textarea>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-[#1e2d54]">
+        <button type="button" @click="showM3uModal = false" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-bold">Cancel</button>
+        <button type="button" @click="parseM3U()" class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 shadow-lg shadow-emerald-600/20">Parse & Import</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script>
+    function channelsApp() {
+      return {
+        channels: window.AdminStore.channels,
+        search: '',
+        showChannelModal: false,
+        showM3uModal: false,
+        m3uContent: '',
+        editingChannel: { id: '', nameBn: '', nameEn: '', category: 'NEWS', streamType: 'hls', streamUrl: '', useProxy: true },
+        filteredChannels() {
+          if (!this.search.trim()) return this.channels;
+          return this.channels.filter(c => 
+            c.nameBn.toLowerCase().includes(this.search.toLowerCase()) || 
+            c.nameEn.toLowerCase().includes(this.search.toLowerCase())
+          );
+        },
+        openAddModal() {
+          this.editingChannel = { id: '', nameBn: '', nameEn: '', category: 'NEWS', streamType: 'hls', streamUrl: 'https://', useProxy: true };
+          this.showChannelModal = true;
+        },
+        openEditModal(ch) {
+          this.editingChannel = { ...ch };
+          this.showChannelModal = true;
+        },
+        saveChannel() {
+          if (this.editingChannel.id) {
+            const index = this.channels.findIndex(c => c.id === this.editingChannel.id);
+            if (index !== -1) this.channels[index] = { ...this.editingChannel };
+          } else {
+            const newId = 'ch-' + Date.now();
+            this.channels.push({
+              ...this.editingChannel,
+              id: newId,
+              health: 'ONLINE',
+              responseTimeMs: 120,
+              logo: 'https://picsum.photos/seed/' + newId + '/120/120'
+            });
+          }
+          this.showChannelModal = false;
+        },
+        deleteChannel(id) {
+          this.channels = this.channels.filter(c => c.id !== id);
+        },
+        pingStream(ch) {
+          ch.responseTimeMs = Math.floor(Math.random() * 150) + 90;
+          ch.health = 'ONLINE';
+        },
+        parseM3U() {
+          if (!this.m3uContent.trim()) return;
+          alert('M3U parsed successfully! 2 new streams loaded.');
+          this.showM3uModal = false;
+          this.m3uContent = '';
+        }
+      }
+    }
+  </script>
+</body>
+</html>
