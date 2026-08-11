@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Shield, Tv, Plus, Trash2, Edit3, RefreshCw, CheckCircle2, XCircle, AlertCircle, Play } from 'lucide-react';
+import { logAdminAction } from '@/lib/auditLogger';
 
 export default function AdminChannelsPage() {
   const [channels, setChannels] = useState([
@@ -18,8 +19,9 @@ export default function AdminChannelsPage() {
   const [newChannel, setNewChannel] = useState({ nameBn: '', nameEn: '', category: 'সংবাদ', streamUrl: '' });
   const [isAddOpen, setIsAddOpen] = useState(false);
 
-  const handleAddChannel = () => {
+  const handleAddChannel = async () => {
     if (!newChannel.nameBn || !newChannel.streamUrl) return;
+    const addedChannelName = newChannel.nameBn;
     setChannels([
       ...channels,
       {
@@ -32,15 +34,45 @@ export default function AdminChannelsPage() {
         isOnline: true,
       },
     ]);
+
+    // Record audit log entry in audit_logs
+    await logAdminAction({
+      userId: 'admin-operator',
+      action: 'TV Channel Added',
+      details: `New TV Channel '${addedChannelName}' (${newChannel.category}) created with stream ${newChannel.streamUrl}`,
+      severity: 'info',
+    });
+
     setNewChannel({ nameBn: '', nameEn: '', category: 'সংবাদ', streamUrl: '' });
     setIsAddOpen(false);
   };
 
-  const handleDeleteChannel = (id: string) => {
+  const handleDeleteChannel = async (id: string) => {
+    const targetChannel = channels.find(c => c.id === id);
     if (confirm('আপনি কি এই চ্যানেলটি মুছে ফেলতে চান?')) {
       setChannels(channels.filter(c => c.id !== id));
+      if (targetChannel) {
+        await logAdminAction({
+          userId: 'admin-operator',
+          action: 'TV Channel Deleted',
+          details: `TV Channel '${targetChannel.nameBn}' (ID: ${id}) was deleted from channel list`,
+          severity: 'warning',
+        });
+      }
     }
   };
+
+  const handleToggleProxy = async (ch: typeof channels[0]) => {
+    const newProxyState = !ch.proxy;
+    setChannels(channels.map(c => c.id === ch.id ? { ...c, proxy: newProxyState } : c));
+    await logAdminAction({
+      userId: 'admin-operator',
+      action: 'TV Channel Proxy Toggled',
+      details: `Edge proxy state for '${ch.nameBn}' set to ${newProxyState ? 'ON' : 'OFF'}`,
+      severity: 'info',
+    });
+  };
+
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-6 font-sans">
@@ -94,9 +126,7 @@ export default function AdminChannelsPage() {
                     <td className="p-3.5 font-mono text-[11px] text-slate-400 max-w-xs truncate">{ch.streamUrl}</td>
                     <td className="p-3.5">
                       <button
-                        onClick={() => {
-                          setChannels(channels.map(c => c.id === ch.id ? { ...c, proxy: !c.proxy } : c));
-                        }}
+                        onClick={() => handleToggleProxy(ch)}
                         className={`px-2.5 py-1 rounded text-[10px] font-bold ${
                           ch.proxy ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-slate-800 text-slate-400'
                         }`}
